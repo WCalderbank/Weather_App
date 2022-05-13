@@ -1,11 +1,22 @@
 import "./App.css";
-import React from "react";
+import React, { useState } from "react";
 const weatherApi = {
   key: "f275f7ed536cb14807cf3876a63270d1",
   base: "https://api.openweathermap.org/data/2.5/",
 };
 
 function App() {
+  const [question, setQuestion] = useState("");
+  const [weather, setWeather] = useState({});
+
+  const search = (E) => {
+    if (E.key === "Enter") {
+      fetch(
+        `${weatherApi.base} weather?q=${question}&units=metric&APPID=${weatherApi.key}`
+      );
+    }
+  };
+
   const dateCreator = (d) => {
     let days = [
       "Sunday",
@@ -49,8 +60,8 @@ function App() {
         </div>
         <div className="weather-box">
           <div className="temperature">10&deg;</div>
+          <div className="weather">Cloudy</div>
         </div>
-        <div className="weather">Cloudy</div>
       </main>
     </div>
   );
