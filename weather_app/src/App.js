@@ -1,7 +1,7 @@
 import "./App.css";
 import React, { useState } from "react";
 const weatherApi = {
-  key: "f275f7ed536cb14807cf3876a63270d1",
+  key: "50ddc921a2868aa19b3c7311d0fb3bee",
   base: "https://api.openweathermap.org/data/2.5/",
 };
 
@@ -9,11 +9,20 @@ function App() {
   const [question, setQuestion] = useState("");
   const [weather, setWeather] = useState({});
 
-  const search = (E) => {
-    if (E.key === "Enter") {
+  const search = (event) => {
+    if (event.key === "Enter") {
       fetch(
-        `${weatherApi.base} weather?q=${question}&units=metric&APPID=${weatherApi.key}`
-      );
+        `${weatherApi.base}weather?q=${question}&units=metric&APPID=${weatherApi.key}`
+      )
+        .then((res) => res.json())
+        .then((result) => {
+          setWeather(result);
+          setQuestion("");
+          console.log(result);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
     }
   };
 
@@ -52,16 +61,38 @@ function App() {
     <div className="App">
       <main>
         <div className="search-box">
-          <input type="text" className="search-bar" placeholder="Location..." />
+          <input
+            type="text"
+            className="search-bar"
+            placeholder="Location..."
+            onChange={(e) => setQuestion(e.target.value)}
+            value={question}
+            onKeyPress={search}
+          />
         </div>
-        <div className="location-box">
-          <div className="location">Manchester, UK</div>
-          <div className="date">{dateCreator(new Date())}</div>
-        </div>
-        <div className="weather-box">
-          <div className="temperature">10&deg;</div>
-          <div className="weather">Cloudy</div>
-        </div>
+        {typeof weather.main != "undefined" ? (
+          <div>
+            <div className="location-box">
+              <div className="location">
+                {weather.name}, {weather.sys.country}
+              </div>
+              <div className="date">{dateCreator(new Date())}</div>
+            </div>
+            <div className="weather-box">
+              <div className="temperature">
+                {Math.round(weather.main.temp)}&deg;c
+              </div>
+              <div className="weather-text">
+                <div className="weather">{weather.weather[0].main}</div>
+                <div className="weather-description">
+                  {weather.weather[0].description}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : (
+          ""
+        )}
       </main>
     </div>
   );
